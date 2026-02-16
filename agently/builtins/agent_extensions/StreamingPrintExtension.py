@@ -12,16 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .base import AgentlyPlugin, AgentlyPluginType
-from .EventHooker import EventHooker
-from .PromptGenerator import PromptGenerator
-from .ModelRequester import ModelRequester
-from .ResponseParser import ResponseParser
-from .ToolManager import ToolManager
-from .BuiltInTool import BuiltInTool
-from .Session import (
-    AnalysisHandler,
-    ExecutionHandler,
-    StandardAnalysisHandler,
-    StandardExecutionHandler,
-)
+
+from agently.core import BaseAgent
+
+
+class StreamingPrintExtension(BaseAgent):
+    async def async_streaming_print(self):
+        async_generator = self.get_async_generator(type="delta")
+        print()
+        async for delta in async_generator:
+            print(delta, end="", flush=True)
+        print()
+
+    def streaming_print(self):
+        generator = self.get_generator(type="delta")
+        print()
+        for delta in generator:
+            print(delta, end="", flush=True)
+        print()

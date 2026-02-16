@@ -1,43 +1,77 @@
-from typing import Any, Literal, Awaitable, Callable, TypeAlias, TYPE_CHECKING
-from typing_extensions import TypedDict, NotRequired
+# Copyright 2023-2025 AgentEra(Agently.Tech)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+from typing import Tuple, Callable, Sequence, Any, Awaitable, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agently.utils import Settings
-    from agently.types.data import SerializableData, ChatMessage
+    from agently.types.data import (
+        ChatMessage,
+        ChatMessageDict,
+        SerializableValue,
+    )
+    from agently.utils import SettingsNamespace
 
-MemoResizeType: TypeAlias = Literal["lite", "deep"] | str
+AnalysisHandler = Callable[
+    [
+        "Sequence[ChatMessage]",
+        "Sequence[ChatMessage]",
+        "SettingsNamespace",
+    ],
+    str | None | Awaitable[str | None],
+]
 
+StandardAnalysisHandler = Callable[
+    [
+        "Sequence[ChatMessage]",
+        "Sequence[ChatMessage]",
+        "SettingsNamespace",
+    ],
+    Awaitable[str | None],
+]
 
-class MemoResizeDecision(TypedDict):
-    type: MemoResizeType
-    reason: NotRequired[str]
-    severity: NotRequired[int]
-    meta: NotRequired[dict[str, Any]]
+ExecutionHandler = Callable[
+    [
+        "Sequence[ChatMessage]",
+        "Sequence[ChatMessage]",
+        "SettingsNamespace",
+    ],
+    Tuple[
+        "Sequence[ChatMessage | ChatMessageDict] | None",
+        "Sequence[ChatMessage | ChatMessageDict] | None",
+        "SerializableValue",
+    ]
+    | Awaitable[
+        Tuple[
+            "Sequence[ChatMessage | ChatMessageDict] | None",
+            "Sequence[ChatMessage | ChatMessageDict] | None",
+            "SerializableValue",
+        ]
+    ],
+]
 
-
-MemoResizePolicyResult: TypeAlias = "MemoResizeType | MemoResizeDecision | None"
-
-MemoResizePolicyHandler: TypeAlias = (
-    "Callable[[list[ChatMessage], list[ChatMessage], Settings], MemoResizePolicyResult | Awaitable[MemoResizePolicyResult]]"
-)
-
-MemoResizePolicyAsyncHandler: TypeAlias = (
-    "Callable[[list[ChatMessage], list[ChatMessage], Settings], Awaitable[MemoResizePolicyResult]]"
-)
-
-MemoResizeHandlerResult: TypeAlias = "tuple[list[ChatMessage], list[ChatMessage], SerializableData]"
-
-MemoResizeHandler: TypeAlias = (
-    "Callable[[list[ChatMessage], list[ChatMessage], SerializableData, Settings], MemoResizeHandlerResult | Awaitable[MemoResizeHandlerResult]]"
-)
-
-MemoResizeAsyncHandler: TypeAlias = (
-    "Callable[[list[ChatMessage], list[ChatMessage], SerializableData, Settings], Awaitable[MemoResizeHandlerResult]]"
-)
-
-AttachmentSummary: TypeAlias = "dict[str, Any]"
-AttachmentSummaryHandler: TypeAlias = (
-    "Callable[[ChatMessage], list[AttachmentSummary] | Awaitable[list[AttachmentSummary]]]"
-)
-
-AttachmentSummaryAsyncHandler: TypeAlias = "Callable[[ChatMessage], Awaitable[list[AttachmentSummary]]]"
+StandardExecutionHandler = Callable[
+    [
+        "Sequence[ChatMessage]",
+        "Sequence[ChatMessage]",
+        "SettingsNamespace",
+    ],
+    Awaitable[
+        Tuple[
+            "Sequence[ChatMessage | ChatMessageDict] | None",
+            "Sequence[ChatMessage | ChatMessageDict] | None",
+            "SerializableValue",
+        ]
+    ],
+]

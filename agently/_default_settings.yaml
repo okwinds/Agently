@@ -16,6 +16,7 @@
 storage:
   db_url: "sqlite+aiosqlite:///localstorage.db"
 prompt:
+  add_current_time: False
   role_mapping:
     system: system
     developer: developer
@@ -34,6 +35,10 @@ prompt:
     input: "INPUT"
     output: "OUTPUT"
     output_requirement: "OUTPUT REQUIREMENT"
+session:
+  max_length: null
+  input_keys: null
+  reply_keys: null
 response:
   streaming_parse: False
   streaming_parse_path_style: dot
