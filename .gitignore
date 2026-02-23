@@ -149,6 +149,9 @@ demo_*
 
 # VSCode
 .vscode
+.claude
+.codex
+.codex-home
 
 # IDEA
 .idea
@@ -161,3 +164,4 @@ node_modules
 
 # spec_docs
 spec_docs
+openspec/
