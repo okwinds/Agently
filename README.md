@@ -104,20 +104,17 @@ Readable, testable workflows with branching and concurrency.
 )
 ```
 
-### 4) 🧠 Session & Memo (Multi‑turn Memory)
-Quick / Lite / Memo modes with summaries and persistence strategies.
+### 4) 🧠 Session (Context Window)
+Manage chat history and trim the context window via `session.max_length` (optional).
 
 ```python
 from agently import Agently
-from agently.core import Session
 
 agent = Agently.create_agent()
-session = Session(agent=agent).configure(
-    mode="memo",
-    limit={"chars": 6000, "messages": 12},
-    every_n_turns=2,
-)
-agent.attach_session(session)
+
+# Enable session and keep the prompt context window bounded (optional)
+agent.set_settings("session.max_length", 6000)
+agent.activate_session(session_id="demo")
 ```
 
 ### 5) 🔧 Tool Calls + Logs
@@ -157,7 +154,7 @@ Agently.set_settings(
 pip install -U agently
 ```
 
-*Requirements: Python >= 3.10, recommended Agently >= 4.0.7.2*
+*Requirements: Python >= 3.10, recommended Agently >= 4.0.8*
 
 ### 5‑minute example
 
@@ -284,9 +281,8 @@ Based on teams shipping real projects with Agently, this **production readiness 
 - **Result & Streaming Events**
   - Result Data: https://agently.tech/docs/en/model-response/result-data.html
   - Streaming Events: https://agently.tech/docs/en/model-response/streaming.html
-- **Session & Memo**
-  - Overview: https://agently.tech/docs/en/agent-extensions/session-memo/
-  - Quickstart: https://agently.tech/docs/en/agent-extensions/session-memo/quickstart.html
+- **Session (Context Window)**
+  - Spec: `spec/02_Core/SESSION_SPEC.md`
 - **TriggerFlow Orchestration**
   - Overview: https://agently.tech/docs/en/triggerflow/overview.html
   - when Branch: https://agently.tech/docs/en/triggerflow/when-branch.html

@@ -2,15 +2,60 @@
 
 默认 Agent 类型在 `agently/base.py` 中通过多继承组合：
 
+Source: `agently/base.py#Agent`
+Source: `agently/builtins/agent_extensions/StreamingPrintExtension.py#StreamingPrintExtension`
+Source: `agently/builtins/agent_extensions/SessionExtension.py#SessionExtension`
+Source: `agently/builtins/agent_extensions/ToolExtension.py#ToolExtension`
+Source: `agently/builtins/agent_extensions/KeyWaiterExtension.py#KeyWaiterExtension`
+Source: `agently/builtins/agent_extensions/AutoFuncExtension.py#AutoFuncExtension`
+Source: `agently/builtins/agent_extensions/ConfigurePromptExtension.py#ConfigurePromptExtension`
+
+- `StreamingPrintExtension`
+- `SessionExtension`
 - `ToolExtension`
 - `KeyWaiterExtension`
 - `AutoFuncExtension`
 - `ConfigurePromptExtension`
 - `BaseAgent`
 
-另有可选扩展：`ChatSessionExtension`（未混入默认 Agent，但可自行组合）。
+另有可选扩展：`ChatSessionExtension`（deprecated；未混入默认 Agent，但可自行组合；推荐使用 `SessionExtension`）。
 
-## 1. ToolExtension
+## 1. StreamingPrintExtension
+
+实现：`agently/builtins/agent_extensions/StreamingPrintExtension.py`
+
+用途：为 Agent 提供“边生成边打印”的便捷方法（基于 `delta` stream）。
+
+对外方法：
+
+- `streaming_print()`：同步消费 `get_generator(type="delta")` 并打印到 stdout
+- `async_streaming_print()`：异步消费 `get_async_generator(type="delta")` 并打印到 stdout
+
+## 2. SessionExtension
+
+实现：`agently/builtins/agent_extensions/SessionExtension.py`
+
+用途：为 Agent 提供可选的会话容器（`Session`）挂载能力，并在请求前/请求后同步 chat_history。
+
+关键属性：
+
+- `agent.sessions: dict[str, Session]`
+- `agent.activated_session: Session | None`
+
+对外方法（核心）：
+
+- `activate_session(session_id=None)`：创建/激活 session，并将 `Session.context_window` 同步到 `agent.agent_prompt["chat_history"]`
+- `deactivate_session()`：取消激活并清空 `agent.agent_prompt["chat_history"]`
+- `reset_chat_history()/set_chat_history()/add_chat_history()/clean_context_window()`：
+  - 若未激活 session：退回到 BaseAgent 行为
+  - 若已激活 session：委托到 Session 并同步覆盖 `agent.agent_prompt["chat_history"]`
+
+扩展点（extension handlers）：
+
+- `request_prefixes`：在发起请求前把 prompt 内 `chat_history` 强制与 session 同步；若 `session.memo` 存在则写入 `CHAT SESSION MEMO`
+- `finally`：在请求结束后把 user/assistant 的内容写回 session（支持 `session.input_keys` / `session.reply_keys` 进行提取与格式化）
+
+## 3. ToolExtension
 
 实现：`agently/builtins/agent_extensions/ToolExtension.py`
 
@@ -65,7 +110,7 @@ ToolExtension 在初始化时注册两个 extension handler：
 - 确保 `full_result_data["extra"]["tool_logs"]` 是 list，并 append tool_log
 - 若 `runtime.show_tool_logs=True`：发系统消息 TOOL
 
-## 2. KeyWaiterExtension
+## 4. KeyWaiterExtension
 
 实现：`agently/builtins/agent_extensions/KeyWaiterExtension.py`
 
@@ -81,7 +126,7 @@ ToolExtension 在初始化时注册两个 extension handler：
 
 校验：必须先定义 output prompt，否则报错；`must_in_prompt=True` 时还要求 key 出现在 output schema 中。
 
-## 3. AutoFuncExtension
+## 5. AutoFuncExtension
 
 实现：`agently/builtins/agent_extensions/AutoFuncExtension.py`
 
@@ -95,7 +140,7 @@ ToolExtension 在初始化时注册两个 extension handler：
 - 同步函数：调用 `.start()`；异步函数：调用 `.async_start()`
 - 不允许 generator/async generator（直接抛 TypeError）
 
-## 4. ConfigurePromptExtension
+## 6. ConfigurePromptExtension
 
 实现：`agently/builtins/agent_extensions/ConfigurePromptExtension.py`
 
@@ -118,7 +163,7 @@ ToolExtension 在初始化时注册两个 extension handler：
   - 支持 `$type/$desc` 或 `.type/.desc` 语法转为 `(type, desc)`
   - 支持 dict/list 递归
 
-## 5. ChatSessionExtension（可选）
+## 7. ChatSessionExtension（可选）
 
 实现：`agently/builtins/agent_extensions/ChatSessionExtension.py`
 
@@ -132,3 +177,8 @@ ToolExtension 在初始化时注册两个 extension handler：
 - `record_input_paths`/`record_output_paths`：
   - 支持记录整个 prompt slot 或 slot 内某个 path
   - mode 支持 `first|all`
+
+兼容性说明：
+
+- `ChatSessionExtension` 在当前版本中已标记为 deprecated（构造时会发出 warning），未来版本可能移除。
+- 推荐使用 `SessionExtension` + `Session` 完成会话管理与记录能力。

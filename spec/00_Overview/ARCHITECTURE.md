@@ -1,5 +1,12 @@
 # 00 / 架构（Architecture）
 
+Source: `agently/__init__.py`
+Source: `agently/base.py`
+Source: `agently/_default_init.py`
+Source: `agently/core/ModelRequest.py`
+Source: `agently/builtins/plugins/ModelRequester/OpenAICompatible.py`
+Source: `agently/builtins/plugins/ResponseParser/AgentlyResponseParser.py`
+
 ## 1. 初始化序列（全局单例的构建）
 
 `agently/__init__.py` 创建 `Agently = AgentlyMain()`。其构建过程由 `agently/base.py` 完成：
@@ -14,7 +21,7 @@
    - `SystemMessageHooker`
    - `PureLoggerHooker`
 4. 创建全局 `Tool(plugin_manager, settings)`（其内部实例化 ToolManager 插件）
-5. 通过多继承把 `BaseAgent` + 扩展（Tool/KeyWaiter/AutoFunc/ConfigurePrompt）合成为默认 `Agent` 类型。
+5. 通过多继承把 `BaseAgent` + 扩展（StreamingPrint/Session/Tool/KeyWaiter/AutoFunc/ConfigurePrompt）合成为默认 `Agent` 类型。
 
 详细初始化细节见：`spec/01_Configuration/INITIALIZATION.md`。
 
@@ -83,4 +90,3 @@ TriggerFlow 由两部分组成：
 TriggerFlow 的 DSL（`.when().to().batch().for_each().match()` 等）本质上是“往 BluePrint 里添加 handler”的语法糖。
 
 详见：`spec/05_TriggerFlow/TRIGGERFLOW_SPEC.md`。
-

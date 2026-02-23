@@ -5,6 +5,10 @@
 - Logger：`agently/utils/Logger.py`
 - Messenger：`agently/utils/Messenger.py`
 
+Source: `agently/utils/Logger.py`
+Source: `agently/utils/Messenger.py`
+Source: `agently/core/EventCenter.py#EventCenterMessenger`
+
 ## 1. create_logger（AgentlyLogger）
 
 ### 1.1 Logger 类
@@ -39,5 +43,8 @@
 因此 messenger 的行为由 `EventCenterMessenger` 决定：
 
 - message/debug/info/warning/error/critical 会被转成 EventCenter 的 emit（log/message/console 等事件）
-- hooker（PureLoggerHooker/SystemMessageHooker/ConsoleHooker）决定最终输出形态
+- hooker（PureLoggerHooker/SystemMessageHooker）决定最终输出形态
 
+兼容性说明：
+
+- `ConsoleHooker` 在当前版本中已标记为 deprecated 且为 no-op（不会处理任何事件），不再参与最终输出形态。
