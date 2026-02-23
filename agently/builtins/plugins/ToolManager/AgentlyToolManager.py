@@ -1,4 +1,4 @@
-# Copyright 2023-2025 AgentEra(Agently.Tech)
+# Copyright 2023-2026 AgentEra(Agently.Tech)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -239,7 +239,7 @@ class AgentlyToolManager(ToolManager):
         *,
         tags: str | list[str] | None = None,
     ):
-        LazyImport.import_package("fastmcp", version_constraint=">=2.10")
+        LazyImport.import_package("fastmcp", version_constraint=">=3")
         from fastmcp import Client
 
         if tags is None:

@@ -1,4 +1,4 @@
-# Copyright 2023-2025 AgentEra(Agently.Tech)
+# Copyright 2023-2026 AgentEra(Agently.Tech)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -146,6 +146,55 @@ class FunctionShifter:
                     break
         finally:
             thread.join()
+
+    @staticmethod
+    def asyncify_sync_generator(sync_gen: Generator[R, Any, Any]) -> AsyncGenerator[R, Any]:
+        SENTINEL = object()
+
+        async def _wrapper():
+            q: "asyncio.Queue[tuple[str, Any]]" = asyncio.Queue()
+            loop = asyncio.get_running_loop()
+            stop_event = threading.Event()
+
+            def _put(kind: str, payload: Any):
+                try:
+                    loop.call_soon_threadsafe(q.put_nowait, (kind, payload))
+                except RuntimeError:
+                    pass
+
+            def _consume():
+                try:
+                    while not stop_event.is_set():
+                        item = next(sync_gen)
+                        _put("item", item)
+                except StopIteration:
+                    pass
+                except Exception as e:
+                    _put("error", e)
+                finally:
+                    try:
+                        sync_gen.close()
+                    except Exception:
+                        pass
+                    _put("end", SENTINEL)
+
+            thread = threading.Thread(target=_consume, daemon=True)
+            thread.start()
+
+            try:
+                while True:
+                    kind, payload = await q.get()
+                    if kind == "item":
+                        yield payload
+                    elif kind == "error":
+                        raise payload
+                    elif kind == "end":
+                        break
+            finally:
+                stop_event.set()
+                await asyncio.to_thread(thread.join)
+
+        return _wrapper()
 
     @staticmethod
     def auto_options_func(func: Callable[..., R]) -> Callable[..., R]:

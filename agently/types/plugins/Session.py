@@ -1,4 +1,4 @@
-# Copyright 2023-2025 AgentEra(Agently.Tech)
+# Copyright 2023-2026 AgentEra(Agently.Tech)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ AnalysisHandler = Callable[
     [
         "Sequence[ChatMessage]",
         "Sequence[ChatMessage]",
+        "SerializableValue",
         "SettingsNamespace",
     ],
     str | None | Awaitable[str | None],
@@ -36,6 +37,7 @@ StandardAnalysisHandler = Callable[
     [
         "Sequence[ChatMessage]",
         "Sequence[ChatMessage]",
+        "SerializableValue",
         "SettingsNamespace",
     ],
     Awaitable[str | None],
@@ -45,6 +47,7 @@ ExecutionHandler = Callable[
     [
         "Sequence[ChatMessage]",
         "Sequence[ChatMessage]",
+        "SerializableValue",
         "SettingsNamespace",
     ],
     Tuple[
@@ -65,6 +68,7 @@ StandardExecutionHandler = Callable[
     [
         "Sequence[ChatMessage]",
         "Sequence[ChatMessage]",
+        "SerializableValue",
         "SettingsNamespace",
     ],
     Awaitable[

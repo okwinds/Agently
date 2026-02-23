@@ -1,4 +1,4 @@
-# Copyright 2023-2025 AgentEra(Agently.Tech)
+# Copyright 2023-2026 AgentEra(Agently.Tech)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,6 +99,11 @@ class TriggerFlowExecution:
         self.settings.set_settings(key, value)
         return self
 
+    # Set Concurrency
+    def set_concurrency(self, concurrency):
+        self._concurrency_semaphore = asyncio.Semaphore(concurrency) if concurrency and concurrency > 0 else None
+        return self
+
     # Emit Event
     async def async_emit(
         self,
@@ -133,6 +138,7 @@ class TriggerFlowExecution:
                     },
                     self.settings,
                 )
+
                 async def run_handler(handler_func):
                     if self._concurrency_semaphore is None:
                         return await handler_func
