@@ -71,10 +71,15 @@ Agently.set_settings("OpenAICompatible", {"base_url": "...", "model": "...", "au
 
 ## 4. 必需/常用 Settings Key（复刻时需保持兼容）
 
+### 4.0 storage.*
+
+- `storage.db_url: str`：默认存储 DB URL（默认值见 `agently/_default_settings.yaml`）
+
 ### 4.1 prompt.*
 
 - `prompt.role_mapping`：`system/developer/assistant/user/_` 角色映射（用于 to_text/to_messages）
 - `prompt.prompt_title_mapping`：to_text 模式下分段标题（SYSTEM/INFO/INPUT/OUTPUT 等）
+- `prompt.add_current_time: bool`：是否在 prompt 中注入当前时间信息（默认 False；用于示例与 TimeInfo 工具链）
 
 ### 4.2 response.*
 
@@ -95,3 +100,10 @@ Agently.set_settings("OpenAICompatible", {"base_url": "...", "model": "...", "au
 - `plugins.<Type>.activate`：当前激活插件名（string）
 - `plugins.<Type>.<PluginName>`：该插件的默认配置树（dict）
 
+### 4.5 session.*
+
+Session 与 SessionExtension 相关设置（默认值见 `agently/_default_settings.yaml`）：
+
+- `session.max_length: int | null`：会话上下文窗口长度上限（以 `len(str(message.model_dump()))` 的累计长度近似计算）
+- `session.input_keys: str | list[str] | null`：SessionExtension 记录用户内容时的提取键（null 表示默认记录完整 request prompt）
+- `session.reply_keys: str | list[str] | null`：SessionExtension 记录 assistant 内容时的提取键（null 表示默认记录完整 parsed result）

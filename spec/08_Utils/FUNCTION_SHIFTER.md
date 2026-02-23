@@ -3,6 +3,9 @@
 实现：`agently/utils/FunctionShifter.py`  
 测试来源：`tests/test_utils/test_function_shifter.py`
 
+Source: `agently/utils/FunctionShifter.py#FunctionShifter`
+Source: `agently/utils/FunctionShifter.py#asyncify_sync_generator`
+
 FunctionShifter 是 Agently 中“同步 API + 异步内部实现”的关键胶水。
 
 ## 1. syncify
@@ -82,3 +85,23 @@ future(func) -> func_returning_asyncio_Future
 
 测试覆盖：原函数用多余参数会 raise；包装后会过滤掉多余 key 并正常返回。
 
+## 6. asyncify_sync_generator
+
+把同步 generator 转成异步 async generator（用于需要 `AsyncGenerator` 的调用链，例如 FastAPI 流式输出）。
+
+签名：
+
+```python
+asyncify_sync_generator(sync_gen: Generator[R, Any, Any]) -> AsyncGenerator[R, Any]
+```
+
+行为要点：
+
+- 在后台线程中持续 `next(sync_gen)` 拉取 item，并通过 `loop.call_soon_threadsafe` 将 item 放入异步队列；
+- 同步 generator 正常结束（StopIteration）时，发送 end sentinel；
+- 同步 generator 抛异常时，发送 error，并在异步消费端 raise；
+- finally：
+  - 尝试 `sync_gen.close()`（忽略 close 异常）
+  - 设置 stop_event，等待后台线程 join
+
+该能力在 `agently/integrations/fastapi.py` 中用于将“用户提供的同步 generator response_provider”桥接为 async generator（以统一 FastAPI 的流式响应处理）。

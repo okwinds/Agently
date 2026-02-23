@@ -3,8 +3,8 @@
 本规格文档基于当前代码仓库反向工程得到，目标是达到“仅凭此文档即可复刻实现（可用不同技术栈）”的粒度。
 
 - 框架名称：`agently`
-  - `pyproject.toml` 声明版本：`4.0.7.1`
-- 反向工程基线：`git` commit `ab69851feb7f1eaf6f151019dc4de92fa76a7fef`
+  - `pyproject.toml` 声明版本：`4.0.8`
+- 反向工程基线（代码事实源）：`git` commit `695c3140008830cea87021512770cfe464448085`
 - 代码入口：`agently/__init__.py` 暴露 `Agently` 单例与 TriggerFlow 相关符号
 
 ## 阅读路径（推荐）
@@ -43,6 +43,7 @@
   - `spec/06_Tools/BUILTIN_TOOLS.md`
 - 07 集成（Integrations）
   - `spec/07_Integrations/CHROMADB.md`
+  - `spec/07_Integrations/FASTAPI.md`
 - 08 工具箱（Utils）
   - `spec/08_Utils/UTILS.md`
   - `spec/08_Utils/RUNTIME_DATA.md`

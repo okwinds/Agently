@@ -1,10 +1,17 @@
 # 00 / 项目概览（Project）
 
+Source: `pyproject.toml`
+Source: `agently/__init__.py`
+Source: `agently/base.py`
+Source: `agently/_default_init.py`
+Source: `agently/_default_settings.yaml`
+
 ## 1. 项目标识
 
 - 名称：Agently 4
 - Python 包名：`agently`
-- 版本：`4.0.7.1`（来自 `pyproject.toml`）
+- 版本：`4.0.8`（来自 `pyproject.toml`）
+- 规格对齐基线（代码事实源）：`git` commit `695c3140008830cea87021512770cfe464448085`
 - Python 版本要求：`>= 3.10`（来自 `pyproject.toml`）
 - License：Apache-2.0（见 `LICENSE`）
 
@@ -33,7 +40,7 @@ Agently 的核心目标是把“调用大模型”变成可工程化的流水线
 - 典型场景：
   - 把自然语言输入转成**稳定的结构化 JSON**结果；
   - 将**工具使用决策**纳入可追踪的执行链路；
-  - 在聊天场景中做**会话压缩/记忆 memo**；
+  - 在聊天场景中做**会话历史记录与上下文窗口裁剪**（`session.max_length`）；
   - 以 TriggerFlow 编排多步骤任务（并发、分支、循环）。
 
 ## 4. 高层模块分区（基于仓库结构）
@@ -64,8 +71,8 @@ Agently 的核心目标是把“调用大模型”变成可工程化的流水线
 
 - `sqlmodel/sqlalchemy/aiosqlite`：`agently/utils/Storage.py`（SQLite 存储）
 - `chromadb`：`agently/integrations/chromadb.py`（ChromaDB 集成）
+- `fastapi`：`agently/integrations/fastapi.py`（FastAPI Helper 集成）
 - `dotenv`：`agently/utils/Settings.py`（读取 `.env`）
-- `rich`：`agently/builtins/hookers/ConsoleHooker.py`（控制台渲染）
 - `ddgs/feedparser/beautifulsoup4`：`agently/builtins/tools/Search.py`、`agently/builtins/tools/Browse.py`（搜索/抓取）
 - `fastmcp`：`agently/builtins/plugins/ToolManager/AgentlyToolManager.py`（MCP tool import）
 

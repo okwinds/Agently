@@ -2,6 +2,11 @@
 
 本章节以“用户如何使用这个框架”为主线，给出复刻实现必须兼容的类/方法/行为。
 
+Source: `agently/__init__.py`
+Source: `agently/base.py#AgentlyMain`
+Source: `agently/core/Agent.py#BaseAgent`
+Source: `agently/core/ModelRequest.py#ModelRequest`
+
 ## 1. 顶层导出（agently/__init__.py）
 
 ```python
@@ -37,8 +42,8 @@ from agently import Agently, TriggerFlow, TriggerFlowBluePrint, TriggerFlowEvent
   - 关键语义见 `spec/01_Configuration/SETTINGS.md`
   - 特殊 key：`runtime.httpx_log_level` 或 `debug` 会刷新 httpx/httpcore logger level
 - `Agently.set_debug_console("ON"|"OFF")`
-  - ON：注册 `ConsoleHooker`（rich live dashboard + 替换 builtins.print）
-  - OFF：卸载 `ConsoleHooker`
+  - 兼容性保留方法，但当前实现已废弃：`"ON"` 只会 warning 且无任何效果；`"OFF"` 同样无行为差异
+  - `ConsoleHooker` 已为 deprecated/no-op（见 `agently/builtins/hookers/ConsoleHooker.py`）
 - `Agently.set_log_level(level)`：设置 logger level
 - `Agently.create_prompt(name="agently_prompt") -> Prompt`
 - `Agently.create_request(name=None) -> ModelRequest`
@@ -162,4 +167,3 @@ Prompt 的规范与输出 schema 语法见：`spec/02_Core/PROMPT_SPEC.md`。
 - ToolManager 支持从 MCP server 动态导入工具（`use_mcp/async_use_mcp`）。
 
 详见：`spec/03_Plugins/TOOL_MANAGER_AGENTLY.md` 与 `spec/06_Tools/BUILTIN_TOOLS.md`。
-

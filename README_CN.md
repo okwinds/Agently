@@ -104,20 +104,17 @@ for msg in response.get_generator(type="instant"):
 )
 ```
 
-### 4) 🧠 Session & Memo 多轮对话管理
-支持 Quick / Lite / Memo 模式，提供记忆、摘要、持久化与裁剪策略。
+### 4) 🧠 Session（对话上下文窗口）
+用于管理 chat history，并可通过 `session.max_length`（可选）对上下文窗口做裁剪。
 
 ```python
 from agently import Agently
-from agently.core import Session
 
 agent = Agently.create_agent()
-session = Session(agent=agent).configure(
-    mode="memo",
-    limit={"chars": 6000, "messages": 12},
-    every_n_turns=2,
-)
-agent.attach_session(session)
+
+# 启用 session，并限制 prompt 上下文窗口长度（可选）
+agent.set_settings("session.max_length", 6000)
+agent.activate_session(session_id="demo")
 ```
 
 ### 5) 🔧 工具调用与日志
@@ -157,7 +154,7 @@ Agently.set_settings(
 pip install -U agently
 ```
 
-*要求：Python ≥ 3.10，建议使用 Agently ≥ 4.0.7.2*
+*要求：Python ≥ 3.10，建议使用 Agently ≥ 4.0.8*
 
 ### 5 分钟上手体验
 
@@ -284,9 +281,8 @@ print(flow.start("这个产品多少钱？"))
 - **结果读取与流式事件**
   - 结果数据与对象: https://agently.cn/docs/model-response/result-data.html
   - 流式返回与事件: https://agently.cn/docs/model-response/streaming.html
-- **Session & Memo**
-  - 概览: https://agently.cn/docs/agent-extensions/session-memo/
-  - 快速开始: https://agently.cn/docs/agent-extensions/session-memo/quickstart.html
+- **Session（对话上下文窗口）**
+  - 规格说明: `spec/02_Core/SESSION_SPEC.md`
 - **TriggerFlow 编排**
   - 概览: https://agently.cn/docs/triggerflow/overview.html
   - when 分支: https://agently.cn/docs/triggerflow/when-branch.html

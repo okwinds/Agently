@@ -2,6 +2,10 @@
 
 核心实现：
 
+Source: `agently/core/TriggerFlow/TriggerFlow.py#TriggerFlow`
+Source: `agently/core/TriggerFlow/Execution.py#TriggerFlowExecution`
+Source: `agently/core/TriggerFlow/process/BaseProcess.py#TriggerFlowBaseProcess`
+
 - `agently/core/TriggerFlow/TriggerFlow.py`
 - `agently/core/TriggerFlow/BluePrint.py`
 - `agently/core/TriggerFlow/Execution.py`
@@ -73,6 +77,8 @@ Execution 保存：
   - 并发限制逻辑：
     - 外层 emit 获取 semaphore
     - 内层（depth>0）不再获取
+- `set_concurrency(concurrency)`
+  - 运行时更新 execution 的全局并发 semaphore（`concurrency>0` 时启用；否则禁用并发限制）
 - runtime_data/flow_data set/append/del：
   - 写入后会触发同名 key 的 handler（trigger_type=runtime_data/flow_data）
 - `async_start(initial_value, wait_for_result=True, timeout=10)`
@@ -107,7 +113,7 @@ Execution 保存：
   - 其中 `trigger_type` 来自构建 `values` 时的外层循环变量，而不是 `data.trigger_type`
 - 该问题会导致 `and` 模式下对 `values[...]` 的更新在某些输入顺序/组合下失效，从而表现为：
   - `When-<uuid>` 可能永远不会被 emit（一直等待 values 中的 EMPTY 变为真实值）
-- 因此，“完美复刻”需要按现实现重现该行为；如果你希望在复刻实现中修复它，应明确记录为与 Agently 4.0.7.1 的不兼容差异。
+- 因此，“完美复刻”需要按当前基线实现重现该行为；如果你希望在复刻实现中修复它，应明确记录为与该基线 commit 的不兼容差异。
 
 ### 4.2 to
 

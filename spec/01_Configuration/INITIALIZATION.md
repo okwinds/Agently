@@ -1,5 +1,11 @@
 # 01 / 初始化（Initialization）
 
+Source: `agently/__init__.py`
+Source: `agently/base.py`
+Source: `agently/_default_init.py`
+Source: `agently/_default_settings.yaml`
+Source: `agently/builtins/hookers/ConsoleHooker.py`
+
 ## 1. 顶层入口
 
 - 对外入口：`agently/__init__.py`
@@ -53,7 +59,10 @@
 - `SystemMessageHooker`（监听 `AGENTLY_SYS`）
 - `PureLoggerHooker`（监听 `message`/`log`）
 
-可通过 `Agently.set_debug_console("ON")` 注册 `ConsoleHooker`，提供 rich live dashboard，并劫持 `builtins.print`。
+兼容性说明：
+
+- `ConsoleHooker` 仍保留为类符号，但已标记为 deprecated 且为 no-op（不会实际注册任何事件处理器）。
+- `Agently.set_debug_console("ON")` 已废弃：当前实现中调用只会输出 warning，**不会产生任何效果**（不会启用 rich dashboard，也不会劫持 `builtins.print`）。
 
 ## 3. AgentlyMain 的外部 API（init 后可用）
 
@@ -67,4 +76,3 @@
 - `Agently.create_agent(name=None)`
 - `Agently.create_request(name=None)`
 - `Agently.create_prompt(name="agently_prompt")`
-
