@@ -152,6 +152,9 @@ _artifacts/
 
 # VSCode
 .vscode
+.claude
+.codex
+.codex-home
 
 # IDEA
 .idea
@@ -162,8 +165,6 @@ _artifacts/
 # node
 node_modules
 
-# local spec workspace, managed by its own nested git repository
-/spec/
 # private spec documents belong under /spec/, not public docs/
 /docs/specs/
 AGENTS.md
@@ -172,3 +173,7 @@ AGENTS.md
 .*/
 !.github/
 !.github/**
+
+# spec_docs
+spec_docs
+openspec/

@@ -5,6 +5,8 @@ load_dotenv(find_dotenv())
 
 import pytest
 import asyncio
+import socket
+from urllib.parse import urlparse
 from asyncio import Task
 from contextlib import suppress
 from typing import AsyncGenerator, cast
@@ -18,6 +20,21 @@ from agently.builtins.plugins.ModelRequester.OpenAICompatible import (
 
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
+
+
+def _ollama_available(base_url: str) -> bool:
+    try:
+        parsed = urlparse(base_url)
+        host = parsed.hostname or "127.0.0.1"
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        with socket.create_connection((host, port), timeout=0.2):
+            return True
+    except OSError:
+        return False
+
+
+if not _ollama_available(OLLAMA_BASE_URL):
+    pytest.skip(f"Ollama not available at {OLLAMA_BASE_URL}", allow_module_level=True)
 
 
 def configure_ollama(request_settings: ModelRequesterSettings):
